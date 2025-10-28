@@ -32,7 +32,7 @@ import { CardRowDirective } from './card-row.directive';
   },
 })
 export class CardComponent<T extends { id: number }> {
-  readonly list = input<any[] | null>(null);
+  readonly list = input.required<T[]>();
   readonly buttonClick = output();
   rowTemplate = contentChild.required(CardRowDirective, { read: TemplateRef });
 }
