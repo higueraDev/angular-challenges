@@ -5,20 +5,38 @@ import {
   randTeacher,
 } from '../../data-access/fake-http.service';
 import { TeacherStore } from '../../data-access/teacher.store';
+import { CardRowDirective } from '../../ui/card/card-row.directive';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-teacher-card',
   template: `
     <app-card
       [list]="teachers()"
-      (onButtonClick)="addItem()"
-      (onItemButtonClick)="deleteItem($event)"
-      customClass="bg-light-red">
+      (buttonClick)="addItem()"
+      class="bg-light-red">
       <img priority ngSrc="assets/img/teacher.png" width="200" height="200" />
+      <ng-template [cardRow]="teachers()" let-teacher>
+        <app-list-item (itemButtonClick)="deleteItem(teacher.id)">
+          {{ teacher.firstName }}
+        </app-list-item>
+      </ng-template>
     </app-card>
   `,
-  imports: [CardComponent, NgOptimizedImage],
+  styles: [
+    `
+      .bg-light-red {
+        background-color: rgba(250, 0, 0, 0.1);
+      }
+    `,
+  ],
+  imports: [
+    CardComponent,
+    NgOptimizedImage,
+    CardRowDirective,
+    ListItemComponent,
+  ],
 })
 export class TeacherCardComponent implements OnInit {
   private http = inject(FakeHttpService);
@@ -35,6 +53,7 @@ export class TeacherCardComponent implements OnInit {
   }
 
   deleteItem(id: number) {
+    console.log(id);
     this.store.deleteOne(id);
   }
 }

@@ -10,20 +10,38 @@ import {
   randStudent,
 } from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
+import { CardRowDirective } from '../../ui/card/card-row.directive';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-student-card',
   template: `
     <app-card
       [list]="students()"
-      (onButtonClick)="addItem()"
-      (onItemButtonClick)="deleteItem($event)"
-      customClass="bg-light-green">
+      (buttonClick)="addItem()"
+      class="bg-light-green">
       <img ngSrc="assets/img/student.webp" width="200" height="200" />
+      <ng-template [cardRow]="students()" let-student>
+        <app-list-item (itemButtonClick)="deleteItem(student.id)">
+          {{ student.firstName }}
+        </app-list-item>
+      </ng-template>
     </app-card>
   `,
-  imports: [CardComponent, NgOptimizedImage],
+  styles: [
+    `
+      .bg-light-green {
+        background-color: rgba(0, 250, 0, 0.1);
+      }
+    `,
+  ],
+  imports: [
+    CardComponent,
+    NgOptimizedImage,
+    CardRowDirective,
+    ListItemComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentCardComponent implements OnInit {
