@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../environments/environment';
-import { Todo } from './todo.model';
+import { environment } from '../../../environments/environment';
+import { Todo } from '../models/todo.model';
 
 @Injectable({
   providedIn: 'root',
