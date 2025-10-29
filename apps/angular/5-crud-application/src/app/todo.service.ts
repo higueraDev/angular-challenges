@@ -14,15 +14,20 @@ class TodoService {
   }
 
   update$(todo: Todo) {
-    return this.http.put<Todo>(
-      `${environment.apiURL}/${todo.id}`,
-      JSON.stringify({ ...todo, completed: !todo.completed }),
-      {
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
+    const url = `${environment.apiURL}/${todo.id}`;
+    const body = JSON.stringify({ ...todo, completed: !todo.completed });
+    const options = {
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
       },
-    );
+    };
+
+    return this.http.put<Todo>(url, body, options);
+  }
+
+  delete$(id: number) {
+    const url = `${environment.apiURL}/${id}`;
+    return this.http.delete(url);
   }
 }
 
