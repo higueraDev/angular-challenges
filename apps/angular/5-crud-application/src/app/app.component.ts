@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { SpinnerComponent } from './core/components/spinner';
-import LoadingService from './core/services/loading.service';
 import { TodosComponent } from './todo/components/todos.component';
+import { TodoStore } from './todo/store/todo.store';
 
 @Component({
   selector: 'app-root',
   template: `
     <div class="text-center">
-      @if (loadingService.loading()) {
+      @if (store.loading()) {
         <app-spinner></app-spinner>
       }
     </div>
@@ -17,5 +17,5 @@ import { TodosComponent } from './todo/components/todos.component';
   imports: [TodosComponent, SpinnerComponent],
 })
 export class AppComponent {
-  protected readonly loadingService = inject(LoadingService);
+  protected readonly store = inject(TodoStore);
 }

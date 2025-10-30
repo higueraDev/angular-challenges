@@ -3,18 +3,17 @@ import {
   Component,
   inject,
   OnInit,
-  signal,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { CardComponent } from '../../core/components/card.component';
-import TodoService from '../../todo/services/todo.service';
 import { Todo } from '../models/todo.model';
+import { TodoStore } from '../store/todo.store';
 
 @Component({
   selector: 'app-todos',
   template: `
     <div class="container">
-      @for (todo of todos(); track todo.id) {
+      @for (todo of store.todos(); track todo.id) {
         <app-card class="todo-card" [title]="todo.title">
           <button mat-button (click)="update(todo)">Complete</button>
           <button mat-button (click)="delete(todo.id)">Delete</button>
@@ -26,31 +25,17 @@ import { Todo } from '../models/todo.model';
   imports: [CardComponent, MatButton],
 })
 export class TodosComponent implements OnInit {
-  readonly todoService = inject(TodoService);
-  todos = signal<Todo[]>([]);
+  protected readonly store = inject(TodoStore);
 
   ngOnInit() {
-    this.todoService
-      .getAll$()
-      .subscribe((todos) => this.todos.update((_) => todos));
+    this.store.loadAll();
   }
 
   update(todo: Todo) {
-    this.todoService
-      .update$(todo)
-      .subscribe((updated) =>
-        this.todos.update((todos) => [
-          ...todos.filter((t) => t.id !== todo.id),
-          updated,
-        ]),
-      );
+    this.store.update(todo);
   }
 
   delete(id: number) {
-    this.todoService
-      .delete$(id)
-      .subscribe(() =>
-        this.todos.update((todos) => [...todos.filter((t) => t.id !== id)]),
-      );
+    this.store.delete(id);
   }
 }
