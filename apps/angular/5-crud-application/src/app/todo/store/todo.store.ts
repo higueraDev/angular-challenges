@@ -1,72 +1,73 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap } from 'rxjs';
+import {
+  patchState,
+  signalStore,
+  withMethods,
+  withState,
+  WritableStateSource,
+} from '@ngrx/signals';
 import { Todo } from '../models/todo.model';
 import TodoService from '../services/todo.service';
 
 type TodoStore = {
   loading: boolean;
   todos: Todo[];
+  error: string;
 };
 
 const initialState: TodoStore = {
   loading: true,
   todos: [],
+  error: '',
+};
+
+const handleError = (err: unknown, store: WritableStateSource<TodoStore>) => {
+  let error = '';
+  if (err instanceof HttpErrorResponse) {
+    error = err.message;
+  } else if (err instanceof Error) {
+    error = err.message;
+  } else {
+    error = 'Unknown error';
+  }
+  patchState(store, { error });
 };
 export const TodoStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withMethods((store, todoService = inject(TodoService)) => ({
-    loadAll: rxMethod<void>(
-      pipe(
-        switchMap(() => todoService.getAll$()),
-        tapResponse({
-          next: (todos) => patchState(store, { todos, loading: false }),
-          error: (err) => {
-            patchState(store, { loading: false });
-            console.error(err);
-          },
-        }),
-      ),
-    ),
-    update: rxMethod<Todo>(
-      pipe(
-        switchMap((todo) => todoService.update$(todo)),
-        tapResponse({
-          next: (updated) =>
-            patchState(store, {
-              todos: store
-                .todos()
-                .map((t) => (t.id !== updated.id ? t : updated)),
-              loading: false,
-            }),
-          error: (err) => {
-            patchState(store, { loading: false });
-            console.error(err);
-          },
-        }),
-      ),
-    ),
-    delete: rxMethod<number>(
-      pipe(
-        switchMap((id) =>
-          todoService.delete$(id).pipe(
-            tapResponse({
-              next: () =>
-                patchState(store, {
-                  todos: store.todos().filter((t) => t.id !== id),
-                  loading: false,
-                }),
-              error: (err) => {
-                patchState(store, { loading: false });
-                console.error(err);
-              },
-            }),
-          ),
-        ),
-      ),
-    ),
+    async loadAll() {
+      try {
+        const todos = await todoService.getAll();
+        patchState(store, { todos });
+      } catch (e) {
+        handleError(e, store);
+      } finally {
+        patchState(store, { loading: false });
+      }
+    },
+    async update(todo: Todo) {
+      try {
+        const updated = await todoService.update(todo);
+        patchState(store, {
+          todos: store.todos().map((t) => (t.id !== todo.id ? t : updated)),
+        });
+      } catch (e) {
+        handleError(e, store);
+      } finally {
+        patchState(store, { loading: false });
+      }
+    },
+    async delete(id: Todo['id']) {
+      try {
+        await todoService.delete(id);
+        patchState(store, { todos: store.todos().filter((t) => t.id !== id) });
+      } catch (e) {
+        handleError(e, store);
+      } finally {
+        patchState(store, { loading: false });
+      }
+    },
   })),
 );

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Todo } from '../models/todo.model';
 
@@ -9,11 +10,11 @@ import { Todo } from '../models/todo.model';
 class TodoService {
   private http = inject(HttpClient);
 
-  getAll$() {
-    return this.http.get<Todo[]>(environment.apiURL);
+  getAll() {
+    return firstValueFrom(this.http.get<Todo[]>(environment.apiURL));
   }
 
-  update$(todo: Todo) {
+  update(todo: Todo) {
     const url = `${environment.apiURL}/${todo.id}`;
     const body = JSON.stringify({ ...todo, completed: !todo.completed });
     const options = {
@@ -22,12 +23,12 @@ class TodoService {
       },
     };
 
-    return this.http.put<Todo>(url, body, options);
+    return firstValueFrom(this.http.put<Todo>(url, body, options));
   }
 
-  delete$(id: number) {
+  delete(id: number) {
     const url = `${environment.apiURL}/${id}`;
-    return this.http.delete(url);
+    return firstValueFrom(this.http.delete(url));
   }
 }
 
