@@ -1,35 +1,26 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { CardComponent } from '../../core/components/card.component';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Todo } from '../models/todo.model';
 import { TodoStore } from '../store/todo.store';
+import { TodoComponent } from './todo.component';
 
 @Component({
   selector: 'app-todos',
   template: `
     <div class="container">
       @for (todo of store.todos(); track todo.id) {
-        <app-card class="todo-card" [title]="todo.title">
-          <button mat-button (click)="update(todo)">Complete</button>
-          <button mat-button (click)="delete(todo.id)">Delete</button>
-        </app-card>
+        <app-todo
+          [title]="todo.title"
+          (update)="update(todo)"
+          (delete)="delete(todo.id)"
+          [disabled]="store.loading()"></app-todo>
       }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, MatButton],
+  imports: [TodoComponent],
 })
-export class TodosComponent implements OnInit {
+export class TodosComponent {
   protected readonly store = inject(TodoStore);
-
-  ngOnInit() {
-    this.store.loadAll();
-  }
 
   update(todo: Todo) {
     this.store.update(todo);

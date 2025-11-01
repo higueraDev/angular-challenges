@@ -17,7 +17,7 @@ type TodoStore = {
 };
 
 const initialState: TodoStore = {
-  loading: true,
+  loading: false,
   todos: [],
   error: '',
 };
@@ -38,6 +38,7 @@ export const TodoStore = signalStore(
   withState(initialState),
   withMethods((store, todoService = inject(TodoService)) => ({
     async loadAll() {
+      patchState(store, { loading: true });
       try {
         const todos = await todoService.getAll();
         patchState(store, { todos });
@@ -48,6 +49,7 @@ export const TodoStore = signalStore(
       }
     },
     async update(todo: Todo) {
+      patchState(store, { loading: true });
       try {
         const updated = await todoService.update(todo);
         patchState(store, {
@@ -60,6 +62,7 @@ export const TodoStore = signalStore(
       }
     },
     async delete(id: Todo['id']) {
+      patchState(store, { loading: true });
       try {
         await todoService.delete(id);
         patchState(store, { todos: store.todos().filter((t) => t.id !== id) });
