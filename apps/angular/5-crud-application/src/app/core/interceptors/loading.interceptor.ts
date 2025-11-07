@@ -9,7 +9,7 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(
           () =>
             new HttpErrorResponse({
-              error: 'Simulated error',
+              error: 'Simulated error' as string,
               status: 500,
               statusText: 'Internal Server Error',
               url: req.url,
