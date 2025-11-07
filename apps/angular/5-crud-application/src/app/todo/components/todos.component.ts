@@ -12,7 +12,8 @@ import { TodoComponent } from './todo.component';
           [title]="todo.title"
           (update)="update(todo)"
           (delete)="delete(todo.id)"
-          [disabled]="store.loading()"></app-todo>
+          [disabled]="store.loading()"
+          [completed]="todo.completed"></app-todo>
       }
     </div>
   `,

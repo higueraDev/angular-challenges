@@ -13,27 +13,11 @@ import { TodoStore } from './todo/store/todo.store';
   template: `
     <app-todos></app-todos>
     @if (store.loading()) {
-      <div class="spinner-container">
+      <div>
         <app-spinner></app-spinner>
       </div>
     }
   `,
-  styles: [
-    `
-      .spinner-container {
-        position: fixed;
-        height: 100dvh;
-        width: 100dvw;
-        top: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: rgba(255, 255, 255, 0.6);
-        z-index: 1000;
-      }
-    `,
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TodosComponent, SpinnerComponent],
 })

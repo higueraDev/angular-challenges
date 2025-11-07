@@ -10,7 +10,7 @@ import {
   selector: 'app-card',
   imports: [MatCard, MatCardTitle, MatCardHeader, MatCardActions],
   template: `
-    <mat-card class="app-card" appearance="outlined">
+    <mat-card [style]="customStyle()" appearance="outlined">
       <mat-card-header>
         <mat-card-title>
           {{ title() }}
@@ -21,8 +21,8 @@ import {
       </mat-card-actions>
     </mat-card>
   `,
-  styles: ['.app-card { display: block}'],
 })
 export class CardComponent {
   title = input('');
+  customStyle = input('');
 }
